@@ -1,5 +1,13 @@
+
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import type { CookieOptions } from '@supabase/ssr';
+
+type CookieToSet = {
+  name: string;
+  value: string;
+  options?: CookieOptions;
+};
 
 export async function serverSupabase() {
   const store = await cookies();
@@ -13,14 +21,14 @@ export async function serverSupabase() {
           return store.getAll();
         },
 
-        setAll(items) {
+        setAll(items: CookieToSet[]) {
           try {
             items.forEach(({ name, value, options }) => {
               store.set(name, value, options);
             });
           } catch {
-            // Puede ejecutarse desde un Server Component,
-            // donde no se permite modificar cookies.
+            // Las cookies no se pueden modificar
+            // desde algunos Server Components.
           }
         },
       },
